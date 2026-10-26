@@ -20,6 +20,8 @@ func _ready() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--shots="):
 			_tour(a.substr(8))
+		if a.begins_with("--autoplay="):
+			_autoplay(float(a.substr(11)))
 
 
 func _shot(dir: String, name: String) -> void:
@@ -102,3 +104,37 @@ func _clear_popups() -> void:
 		Game.duel_finish()
 	while not hud.modal_stack.is_empty():
 		hud.close_modal()
+
+
+## Smoke test of the real interface: runs at top speed, clicks the first enabled button in any window,
+## and now and then travels or opens a meeting. Prints a summary and quits.
+func _autoplay(seconds: float) -> void:
+	await get_tree().create_timer(0.5).timeout
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	var clicks := 0
+	var t := 0.0
+	while t < seconds and not Game.over:
+		await get_tree().process_frame
+		t += get_process_delta_time()
+		if not hud.modal_stack.is_empty():
+			var top: Control = hud.modal_stack[-1]
+			var buttons := top.find_children("*", "Button", true, false).filter(func(b): return not b.disabled and b.is_visible_in_tree())
+			if not buttons.is_empty():
+				var b: Button = buttons[rng.randi() % buttons.size()] if rng.randf() < 0.5 else buttons[0]
+				b.pressed.emit()
+				clicks += 1
+			continue
+		Game.set_speed(3)
+		if Game.player["travel"].is_empty() and rng.randf() < 0.01:
+			var ids := ["salt", "amman", "irbid", "zarqa", "madaba"]
+			hud.ask_travel(ids[rng.randi() % ids.size()])
+		elif Game.player["travel"].is_empty() and rng.randf() < 0.03:
+			for pid in Game.people:
+				if Game.people[pid]["town"] == Game.player["town"] and Game.person_place(pid) != "" and Game.can_meet(pid) == "":
+					hud.open_meet(pid)
+					break
+		elif rng.randf() < 0.005:
+			hud.open_schemes()
+	print("AUTOPLAY day %d over=%s clicks=%d" % [Game.day(), Game.over, clicks])
+	get_tree().quit()

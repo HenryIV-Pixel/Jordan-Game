@@ -46,6 +46,7 @@ func _ready() -> void:
 
 
 func _process(_d: float) -> void:
+	Game.ui_hold = not modal_stack.is_empty()
 	_update_top()
 	refresh(false)
 
@@ -69,6 +70,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 				close_modal()
 		KEY_HOME:
 			map.focus(Game.player_pos())
+		KEY_F11:
+			var full := DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if full else DisplayServer.WINDOW_MODE_FULLSCREEN)
 		_:
 			return
 	get_viewport().set_input_as_handled()
@@ -940,11 +944,14 @@ func show_intro() -> void:
 	v.add_child(UI.sep_line())
 	v.add_child(UI.label("كيف تلعب", 18, UI.GOLD, 700))
 	for line in ["الوقت يجري وحده: مسافة للإيقاف، و١ ٢ ٣ للسرعة.", "الأماكن تفتح وتغلق، والناس يتنقّلون بين بيوتهم وأعمالهم. انظر من في المكان واجلس معه.",
-		"انقر على مدينة في الخريطة لتسافر. عجلة الفأرة للتقريب، والسحب لتحريك الخريطة.", "في كل لقاء اقرأ طباع الرجل واختر ما يناسبه. الدسائس أسرع… وأخطر."]:
+		"انقر على مدينة في الخريطة لتسافر. عجلة الفأرة للتقريب، والسحب لتحريك الخريطة. F11 لملء الشاشة.", "في كل لقاء اقرأ طباع الرجل واختر ما يناسبه. الدسائس أسرع… وأخطر."]:
 		v.add_child(UI.label("• " + line, 16, UI.TEXT2, 400, true))
 	var b := UI.button("ابدأ", "primary", 20)
 	b.custom_minimum_size.y = 52
-	b.pressed.connect(close_modal)
+	b.pressed.connect(func():
+		close_modal()
+		Game.set_speed(1)
+		Game.say("ابدأ من دار البلدية: الحاج زياد في مكتبه حتى الثانية ظهراً. وأبوك في البيت إن احترت."))
 	v.add_child(b)
 	open_modal(card, false, 780)
 

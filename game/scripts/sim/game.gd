@@ -42,6 +42,7 @@ var issues_done := 0
 var event_queue: Array = []
 var duel := {}
 var paper_open := false
+var ui_hold := false # the interface has a window open: the clock waits
 var _acc := 0.0
 
 
@@ -166,7 +167,7 @@ func is_blocked() -> bool:
 	return over or not event_queue.is_empty() or not duel.is_empty() or paper_open
 
 func _process(delta: float) -> void:
-	if is_blocked() or speed == 0:
+	if is_blocked() or speed == 0 or ui_hold:
 		return
 	var rate: float = RATES[speed]
 	if not player["travel"].is_empty():
