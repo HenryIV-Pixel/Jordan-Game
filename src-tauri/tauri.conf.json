@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "المملكة",
+  "productName": "Al-Mamlaka",
   "version": "0.1.0",
   "identifier": "com.grie.jordanstrategy",
   "build": {
@@ -22,17 +22,31 @@
         "center": true
       }
     ],
-    "security": { "csp": null }
+    "security": {
+      "csp": null
+    }
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi"],
+    "targets": [
+      "nsis"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.ico",
       "icons/icon.png"
-    ]
-  }
+    ],
+    "windows": {
+      "nsis": {
+        "languages": [
+          "Arabic",
+          "English"
+        ],
+        "displayLanguageSelector": false
+      }
+    }
+  },
+  "mainBinaryName": "al-mamlaka"
 }
