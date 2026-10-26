@@ -1,39 +1,59 @@
 name: Build Windows game
 
 # Runs on every push to main and on demand (Actions tab → "Run workflow").
+# Downloads Godot, runs the automated playthroughs, then exports a Windows .exe.
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+env:
+  GODOT_VERSION: 4.7.2
+
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
+      - name: Cache Godot and export templates
+        id: cache
+        uses: actions/cache@v4
         with:
-          node-version: 22
-          cache: npm
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Download Godot and export templates
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          cd ~/godot
+          curl -sSL -o godot.zip https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          unzip -q godot.zip && rm godot.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
+          curl -sSL -o templates.tpz https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+          unzip -q templates.tpz && rm templates.tpz
+          mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
 
-      - uses: swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
+      - name: Import project
+        run: ~/godot/godot --headless --path game --import 2>&1 | tail -5
 
-      - run: npm ci
-      - run: npm test
+      - name: Automated playthroughs (90 games)
+        run: |
+          ~/godot/godot --headless --path game res://tests/test.tscn 2>&1 | tee test.log
+          grep -q "FAILURES: 0" test.log || { grep -E "FAIL|ERROR" test.log | sed 's/^/::error::/'; exit 1; }
 
-      - name: Build the installer
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Export Windows .exe
+        run: |
+          mkdir -p build
+          ~/godot/godot --headless --path game --export-release "Windows Desktop" ../build/AlMamlaka1953.exe 2>&1 | tee export.log
+          if [ ! -f build/AlMamlaka1953.exe ]; then grep -iE "error|fail" export.log | head -20 | sed 's/^/::error::/'; exit 1; fi
+          ls -la build
 
-      - name: Upload installers
+      - name: Upload the game
         uses: actions/upload-artifact@v4
         with:
-          name: windows-installer
-          path: |
-            src-tauri/target/release/bundle/nsis/*.exe
+          name: AlMamlaka1953-windows
+          path: build/AlMamlaka1953.exe
