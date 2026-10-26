@@ -127,6 +127,12 @@ function resolveVote(s: GameState) {
   v.resolved = passed ? 'passed' : 'failed';
   const project = m.projects.find((x) => x.id === v.projectId);
   if (project) project.status = passed ? 'underway' : 'rejected';
+  // the proposed budget line becomes real spending or disappears
+  const line = m.budget.expense.find((l) => l.label.includes('(مقترح)'));
+  if (line) {
+    if (passed) line.label = line.label.replace(' (مقترح)', '');
+    else m.budget.expense = m.budget.expense.filter((l) => l !== line);
+  }
   inbox(s, 'result', `المجلس البلدي: ${v.title}`, passed
     ? `أُقرّ المشروع بـ${yes} أصوات مقابل ${no}. يبدأ العمل الأسبوع القادم.`
     : `سقط المشروع: ${yes} مع، ${no} ضدّ. المياه ستبقى أزمة هذا الصيف.`);
