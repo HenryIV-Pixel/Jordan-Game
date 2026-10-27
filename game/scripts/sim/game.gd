@@ -1546,6 +1546,30 @@ func forecast() -> Dictionary:
 	var p := you / (you + him) * 100.0
 	return {"you": p, "him": 100.0 - p}
 
+## The same sums as forecast(), as lines for the tooltip: [what, your points, his points].
+func forecast_breakdown() -> Array:
+	var rows := []
+	rows.append(["القاعدة الانتخابية", 18.0, 30.0])
+	rows.append(["السمعة", player["rep"] * 0.4, rival["rep"] * 0.4])
+	rows.append(["الفضيحة", -player["scandal"] * 0.35, -rival["scandal"] * 0.35])
+	for pid in notables():
+		var w: float = people[pid]["weight"]
+		match backing(pid):
+			"player": rows.append([people[pid]["name"], w, 0.0])
+			"rival": rows.append([people[pid]["name"], 0.0, w])
+			"lean_player": rows.append([people[pid]["name"] + " (ميل)", w * 0.5, 0.0])
+			"lean_rival": rows.append([people[pid]["name"] + " (ميل)", 0.0, w * 0.5])
+	if water["solved_by"] == "player":
+		rows.append(["حلّ أزمة المياه", 8.0, 0.0])
+	elif water["solved_by"] == "rival":
+		rows.append(["حلّ أزمة المياه", 0.0, 8.0])
+	if flags.get("wedding_attended", false):
+		rows.append(["عرس إربد", 3.0, 0.0])
+	if flags.has("debate"):
+		rows.append(["ليلة المضافة", float(flags["debate"]), 0.0])
+	return rows
+
+
 func _finish() -> void:
 	var f := forecast()
 	var noise := rng.randf_range(-3.0, 3.0)

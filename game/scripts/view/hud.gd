@@ -21,6 +21,10 @@ var rumour_box: VBoxContainer
 var toast_box: VBoxContainer
 var modal_layer: Control
 var modal_stack: Array = []
+var tabs: Anim.TabStrip
+var tabs_panel: PanelContainer
+var alerts: Anim.AlertStack
+var _last_town := "-"
 var _sig := ""
 var _last_speed := 2
 var _paused_banner: Label
@@ -35,6 +39,10 @@ func _ready() -> void:
 	_build_top()
 	_build_columns()
 	_build_bottom()
+	_build_tabs()
+	alerts = Anim.AlertStack.new()
+	alerts.position = Vector2(480, 112)
+	add_child(alerts)
 	modal_layer = Control.new()
 	modal_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(modal_layer)
@@ -101,8 +109,9 @@ func _build_top() -> void:
 	dt.custom_minimum_size.x = 300
 	h.add_child(dt)
 	h.add_child(_vline())
-	top_money = _stat_chip(h, "المال")
-	top_rep = _stat_chip(h, "السمعة")
+	top_money = _stat_chip(h, "المال", "مالك بالدينار. راتبك ٦ دنانير كل سبت.\nتنفقه على الهدايا والصهاريج والرشى.")
+	(top_money as Anim.CountLabel).fmt = func(v: float) -> String: return "%s د." % Game.ar(int(round(v)))
+	top_rep = _stat_chip(h, "السمعة", "ما يقوله الناس عنك في السلط.\nترتفع بالعمل والكرم وحلّ مشاكل الناس، وتنخفض بالإشاعات.\nكل نقطة سمعة تساوي أصواتاً يوم الاقتراع.")
 	var sc := UI.vbox(4)
 	sc.custom_minimum_size.x = 170
 	var sch := UI.hbox(6)
@@ -145,12 +154,18 @@ func _wrap_chip(c: Control) -> PanelContainer:
 	return p
 
 
-func _stat_chip(parent: Control, title: String) -> Label:
+func _stat_chip(parent: Control, title: String, tip := "") -> Label:
 	var h := UI.hbox(10)
 	h.add_child(UI.label(title, 14, UI.TEXT2))
-	var v := UI.label("", 19, UI.TEXT, 700)
+	var v := Anim.CountLabel.new()
+	v.add_theme_font_size_override("font_size", 19)
+	v.add_theme_font_override("font", UI.font(700))
+	v.add_theme_color_override("font_color", UI.TEXT)
 	h.add_child(v)
-	parent.add_child(_wrap_chip(h))
+	var chip := _wrap_chip(h)
+	chip.tooltip_text = tip
+	chip.mouse_filter = Control.MOUSE_FILTER_STOP
+	parent.add_child(chip)
 	return v
 
 
@@ -162,8 +177,8 @@ func _update_top() -> void:
 	else:
 		where = Game.town_name(Game.player["town"])
 	top_time.text = "الساعة %s · %s" % [Game.clock_text(), where]
-	top_money.text = "%s د." % Game.ar(int(Game.player["money"]))
-	top_rep.text = Game.ar(int(Game.player["rep"]))
+	(top_money as Anim.CountLabel).set_value(Game.player["money"])
+	(top_rep as Anim.CountLabel).set_value(int(Game.player["rep"]))
 	top_scandal.value = Game.player["scandal"] / 100.0
 	top_scandal.queue_redraw()
 	top_scandal_lbl.text = Game.ar(int(Game.player["scandal"]))
@@ -218,6 +233,11 @@ func refresh(force: bool) -> void:
 	_build_left()
 	_build_right()
 	_build_rumours()
+	_update_alerts()
+	var here: String = Game.player["town"] + str(Game.player["travel"].is_empty())
+	if here != _last_town:
+		_last_town = here
+		Anim.cascade(left_box, 0.05, 0.25)
 
 
 func _build_left() -> void:
@@ -349,27 +369,103 @@ func _build_right() -> void:
 	var fh := UI.hbox()
 	fh.add_child(UI.label("حديث المقاهي عن الانتخابات", 15, UI.TEXT2))
 	v.add_child(fh)
-	v.add_child(_vote_row("أنت", f["you"], UI.GOLD))
-	v.add_child(_vote_row("عيسى", f["him"], UI.RED))
+	var tip := "من أين تأتي الأصوات (أنت / عيسى):"
+	for row in Game.forecast_breakdown():
+		if abs(row[1]) >= 0.5 or abs(row[2]) >= 0.5:
+			tip += "\n%s: %s / %s" % [row[0], _signed(row[1]), _signed(row[2])]
+	var you_row := _vote_row("أنت", f["you"], UI.GOLD)
+	you_row.tooltip_text = tip
+	you_row.mouse_filter = Control.MOUSE_FILTER_STOP
+	v.add_child(you_row)
+	var him_row := _vote_row("عيسى", f["him"], UI.RED)
+	him_row.tooltip_text = tip
+	him_row.mouse_filter = Control.MOUSE_FILTER_STOP
+	v.add_child(him_row)
 	v.add_child(UI.sep_line())
 	v.add_child(UI.label("الوجهاء", 15, UI.TEXT2))
 	for pid in Game.notables():
 		v.add_child(_backer_row(pid))
 	right_box.add_child(card)
-	# buttons
-	var bh := UI.hbox(8)
-	var cab := UI.button("خزانة الملفات (%s)" % Game.ar(Game.secrets.size()), "gold", 15)
-	cab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	cab.pressed.connect(open_cabinet)
-	bh.add_child(cab)
-	var sch := UI.button("الدسائس (%s)" % Game.ar(Game.schemes.size()), "gold", 15)
-	sch.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	sch.pressed.connect(open_schemes)
-	bh.add_child(sch)
-	var his := UI.button("السجلّ", "", 15)
-	his.pressed.connect(open_history)
-	bh.add_child(his)
-	right_box.add_child(bh)
+
+
+func _signed(x: float) -> String:
+	var n := int(round(x))
+	return ("+" if n > 0 else ("−" if n < 0 else "")) + Game.ar(abs(n))
+
+
+func _build_tabs() -> void:
+	tabs_panel = UI.panel(false, 6)
+	tabs_panel.position = Vector2(560, 1080 - 20 - 64)
+	tabs_panel.size = Vector2(800, 64)
+	add_child(tabs_panel)
+	tabs = Anim.TabStrip.new(["الخريطة", "خزانة الملفات", "الدسائس", "سجلّ الأيام", "القائمة"])
+	tabs_panel.add_child(tabs)
+	tabs.selected.connect(_on_tab)
+	Anim.slide_in(tabs_panel, Vector2(0, 90), 0.5, 0.2)
+
+
+func _on_tab(i: int) -> void:
+	while not modal_stack.is_empty():
+		close_modal()
+	match i:
+		1:
+			open_cabinet()
+		2:
+			open_schemes()
+		3:
+			open_history()
+		4:
+			_confirm_menu()
+	if i > 0:
+		tabs.select(i, false) # closing the old window reset the underline; put it back on this tab
+
+
+func _confirm_menu() -> void:
+	var card := UI.panel(true, 22)
+	var v := UI.vbox(12)
+	card.add_child(v)
+	_modal_header(v, "العودة إلى القائمة الرئيسية؟", "ستضيع هذه المسيرة.")
+	var h := UI.hbox(10)
+	var yes := UI.button("نعم، إلى القائمة", "danger", 16)
+	yes.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	yes.pressed.connect(func():
+		close_modal()
+		menu_requested.emit())
+	h.add_child(yes)
+	var no := UI.button("تابع اللعب", "", 16)
+	no.pressed.connect(close_modal)
+	h.add_child(no)
+	v.add_child(h)
+	open_modal(card, true, 480)
+
+
+func _update_alerts() -> void:
+	var list := []
+	var w: Dictionary = Game.water
+	if w["solved_by"] == "" and w["severity"] >= 50:
+		list.append({"id": "water", "glyph": "!", "color": UI.RED, "tip": "أزمة المياه في السلط: الخطورة %s٪ وتزداد كل يوم." % Game.ar(int(w["severity"])),
+			"on_click": func(): map.focus(Game.town_pos("salt"), 3.0)})
+	if not Game.schemes.is_empty():
+		var t := "دسائس جارية:"
+		for s in Game.schemes:
+			t += "\n%s — %s (تنتهي %s)" % [C.SCHEMES[s["type"]]["name"], Game.person_name(s["target"]), Game.date_text(s["end"], false)]
+		list.append({"id": "schemes", "glyph": Game.ar(Game.schemes.size()), "color": UI.GOLD, "tip": t, "on_click": open_schemes})
+	var town: String = Game.player["town"]
+	if town != "" and Game.player["travel"].is_empty():
+		var names := []
+		for pl in Game.places(town):
+			if Game.place_open(pl):
+				for pid in Game.who_at(town, pl["id"]):
+					if pid != "issa" and Game.can_meet(pid) == "":
+						names.append(Game.person_name(pid))
+		if not names.is_empty():
+			list.append({"id": "meet", "glyph": "ل", "color": UI.GREEN, "tip": "يمكنك الآن الجلوس مع: " + "، ".join(names)})
+		if Game.rival["town"] == town and Game.rival["travel"].is_empty():
+			list.append({"id": "rival", "glyph": "ع", "color": UI.RED, "tip": "عيسى في %s الآن." % Game.town_name(town)})
+	if Game.flags.get("wedding_open", false) and not Game.flags.get("wedding_attended", false) and Game.day() <= 19:
+		list.append({"id": "wedding", "glyph": "ز", "color": UI.BLUE, "tip": "عرس آل الناصر في إربد مساء الخميس ٢١ أيار. الشيخ فالح ينتظر رجال العائلة.",
+			"on_click": func(): map.focus(Game.town_pos("irbid"), 2.5)})
+	alerts.show_alerts(list)
 
 
 func _vote_row(name: String, pct: float, c: Color) -> Control:
@@ -433,7 +529,7 @@ func _build_rumours() -> void:
 	h.add_child(UI.label(Game.date_text(r["min"], false), 13, UI.FAINT))
 	v.add_child(h)
 	rumour_box.add_child(p)
-	rumour_box.position.y = 1080 - 24 - p.get_combined_minimum_size().y
+	rumour_box.position.y = 1080 - 20 - 64 - 12 - p.get_combined_minimum_size().y
 
 
 func _on_toast(text: String) -> void:
@@ -476,8 +572,8 @@ func open_modal(content: Control, closable := true, width := 760) -> Control:
 	content.custom_minimum_size.x = width
 	center.add_child(content)
 	modal_stack.append(root)
-	root.modulate.a = 0.0
-	create_tween().tween_property(root, "modulate:a", 1.0, 0.18)
+	Anim.fade_in(dim, 0.2)
+	Anim.pop_in(content)
 	return root
 
 
@@ -485,7 +581,12 @@ func close_modal() -> void:
 	if modal_stack.is_empty():
 		return
 	var root: Control = modal_stack.pop_back()
-	root.queue_free()
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var t := root.create_tween()
+	t.tween_property(root, "modulate:a", 0.0, 0.12)
+	t.tween_callback(root.queue_free)
+	if modal_stack.is_empty() and tabs and tabs.current != 0:
+		tabs.select(0, false)
 	refresh(true)
 
 

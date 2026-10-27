@@ -45,6 +45,16 @@ jobs:
           ~/godot/godot --headless --path game res://tests/test.tscn 2>&1 | tee test.log
           grep -q "FAILURES: 0" test.log || { grep -E "FAIL|ERROR" test.log | sed 's/^/::error::/'; exit 1; }
 
+      - name: Parliament scenario playthroughs (80 games)
+        run: |
+          ~/godot/godot --headless --path game res://tests/test_house.tscn 2>&1 | tee house.log
+          grep -q "FAILURES: 0" house.log || { grep -E "FAIL|ERROR" house.log | sed 's/^/::error::/'; exit 1; }
+
+      - name: Portrait downloader tests (offline)
+        run: |
+          pip install --quiet pillow
+          python3 tools/test_fetch_portraits.py
+
       - name: Export Windows .exe
         run: |
           mkdir -p build
