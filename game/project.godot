@@ -12,6 +12,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Game="*res://scripts/sim/game.gd"
+House="*res://scripts/sim/house.gd"
 
 [display]
 

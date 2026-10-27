@@ -9,6 +9,27 @@ var mood := 0.0
 var border := UI.GOLD_LINE
 var you := false
 
+static var _photos := {}
+
+
+## A downloaded photo for a real person: first from a "portraits" folder next to the game's .exe
+## (so photos can be added without rebuilding), then from the game's own res://portraits.
+static func photo(id: String) -> Texture2D:
+	if id == "":
+		return null
+	if _photos.has(id):
+		return _photos[id]
+	var tex: Texture2D = null
+	var beside := OS.get_executable_path().get_base_dir().path_join("portraits").path_join(id + ".jpg")
+	if FileAccess.file_exists(beside):
+		var img := Image.load_from_file(beside)
+		if img:
+			tex = ImageTexture.create_from_image(img)
+	elif ResourceLoader.exists("res://portraits/%s.jpg" % id):
+		tex = load("res://portraits/%s.jpg" % id)
+	_photos[id] = tex
+	return tex
+
 
 static func make(look_in: Dictionary, size_px: float, mood_in := 0.0) -> Portrait:
 	var p := Portrait.new()
@@ -34,6 +55,17 @@ func _draw() -> void:
 	bg.border_color = border
 	bg.set_border_width_all(max(1, int(1.6 * s)))
 	draw_style_box(bg, Rect2(Vector2.ZERO, size))
+	var tex := Portrait.photo(look.get("photo", ""))
+	if tex:
+		var inset := Rect2(Vector2.ONE * 2 * s, size - Vector2.ONE * 4 * s)
+		draw_texture_rect(tex, inset, false, Color(1, 0.97, 0.9))
+		var frame := StyleBoxFlat.new()
+		frame.draw_center = false
+		frame.set_corner_radius_all(int(10 * s))
+		frame.border_color = border
+		frame.set_border_width_all(max(1, int(1.6 * s)))
+		draw_style_box(frame, Rect2(Vector2.ZERO, size))
+		return
 	var skin: Color = SKIN[int(look.get("skin", 1)) % SKIN.size()]
 	var hw: int = look.get("hw", -1)
 	var cx := w * 0.5

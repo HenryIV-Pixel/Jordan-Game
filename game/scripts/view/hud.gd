@@ -1,5 +1,7 @@
 class_name HUD
 extends Control
+
+signal menu_requested
 ## All on-screen interface over the map. Rebuilds the side panels only when the visible state changes.
 
 const C := preload("res://scripts/sim/content.gd")

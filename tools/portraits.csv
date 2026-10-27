@@ -1,0 +1,61 @@
+id,name,search,qid,role,priority,section
+hussein_bin_talal,King Hussein bin Talal,Hussein of Jordan,,King from 1952 (assumed powers May 1953),A,The royal family
+talal_bin_abdullah,King Talal bin Abdullah,Talal of Jordan,,King 1951 to 1952,B,The royal family
+abdullah_i,King Abdullah I,Abdullah I of Jordan,,"Founder, assassinated in Jerusalem 1951",B,The royal family
+zein_al_sharaf,Queen Zein al-Sharaf,Zein al-Sharaf Talal,,"Hussein's mother, queen mother",A,The royal family
+nayef_bin_abdullah,Prince Nayef bin Abdullah,Prince Nayef bin Abdullah,,"Hussein's uncle, regent 1951 to 1952",B,The royal family
+muhammad_bin_talal,Prince Muhammad bin Talal,Prince Muhammad bin Talal,,Hussein's brother,B,The royal family
+hassan_bin_talal,Prince Hassan bin Talal,Prince Hassan bin Talal,,"Hussein's younger brother, crown prince from 1965",B,The royal family
+basma_bint_talal,Princess Basma bint Talal,Princess Basma bint Talal,,Hussein's sister,C,The royal family
+nasser_bin_jamil,Sharif Nasser bin Jamil,Sharif Nasser bin Jamil,,"Hussein's maternal uncle, senior army and court figure",A,The royal family
+zaid_bin_shaker,Sharif Zaid bin Shaker,Sharif Zaid bin Shaker,,"Cousin, young officer who rose to command",B,The royal family
+hussein_bin_nasser,Sharif Hussein bin Nasser,Sharif Hussein bin Nasser,,Courtier and later prime minister (check years),B,The royal family
+dina_bint_abdul_hamid,Queen Dina bint Abdul-Hamid,Dina bint Abdul-Hamid,,"Hussein's first wife, married 1955",C,The royal family
+muna_al_hussein,Princess Muna al-Hussein (Antoinette Gardiner),Princess Muna al-Hussein,,"Hussein's second wife, married 1961",C,The royal family
+tawfiq_abu_al_huda,Tawfiq Abu al-Huda,Tawfiq Abu al-Huda,,"Prime minister several times, including 1951 to 1953 and 1954 to 1955",A,"Prime ministers, ministers and court"
+fawzi_al_mulqi,Fawzi al-Mulqi,Fawzi Mulki,,Prime minister 1953 to 1954,A,"Prime ministers, ministers and court"
+said_al_mufti,Said al-Mufti,Said al-Mufti,,"Prime minister 1955 and 1956, Circassian",A,"Prime ministers, ministers and court"
+samir_al_rifai,Samir al-Rifai,Samir al-Rifai,,"Prime minister several times, including 1956",A,"Prime ministers, ministers and court"
+hazza_al_majali,Hazza al-Majali,Hazza' Majali,,"Prime minister 1955 and 1956, again 1959 to 1960; assassinated 1960",A,"Prime ministers, ministers and court"
+sulayman_al_nabulsi,Sulayman al-Nabulsi,Suleiman Nabulsi,,"Prime minister 1956 to 1957, leader of the National Socialist Party",A,"Prime ministers, ministers and court"
+ibrahim_hashim,Ibrahim Hashim,Ibrahim Hashem,,Prime minister 1957 and 1958; killed in Baghdad in July 1958,B,"Prime ministers, ministers and court"
+bahjat_al_talhouni,Bahjat al-Talhouni,Bahjat Talhouni,,"Prime minister 1960, 1962 and 1967 to 1969; court chief",B,"Prime ministers, ministers and court"
+wasfi_al_tal,Wasfi al-Tal,Wasfi al-Tal,,"Prime minister 1962 to 1963, 1965 to 1967, 1970 to 1971; assassinated 1971",B,"Prime ministers, ministers and court"
+abdullah_al_rimawi,Abdullah al-Rimawi,Abdullah al-Rimawi,,"Foreign minister 1956 to 1957, Baath party",A,"Prime ministers, ministers and court"
+anwar_nusseibeh,Anwar Nusseibeh,Anwar Nusseibeh,,"Palestinian notable, minister and governor of Jerusalem",B,"Prime ministers, ministers and court"
+hazim_nusseibeh,Hazim Nusseibeh,Hazim Nusseibeh,,Foreign minister around 1962 (check),C,"Prime ministers, ministers and court"
+ruhi_al_khatib,Ruhi al-Khatib,Ruhi al-Khatib,,Mayor of Jerusalem from 1957,B,"Prime ministers, ministers and court"
+mohammed_ali_al_jabari,Mohammed Ali al-Ja'bari,Muhammad Ali al-Jabari,,"Mayor of Hebron, pro-monarchy Palestinian",B,"Prime ministers, ministers and court"
+john_bagot_glubb,John Bagot Glubb (Glubb Pasha),John Bagot Glubb,,British commander of the Arab Legion until dismissed in March 1956,A,Army and security officers
+ali_abu_nuwar,Ali Abu Nuwar,Ali Abu Nuwar,,"Chief of staff 1956 to 1957, Free Officers sympathiser, exiled",A,Army and security officers
+ali_al_hiyari,Ali al-Hiyari,Ali al-Hiyari,,"Chief of staff in 1957, defected to Syria",A,Army and security officers
+habis_al_majali,Habis al-Majali,Habis al-Majali,,Army commander from 1958 for many years,A,Army and security officers
+radi_annab,Radi Annab,Radi Annab,,"Free Officers member, 1957",B,Army and security officers
+nadhir_rasheed,Nadhir Rasheed,Nadhir Rasheed,,"Security chief, 1950s, later head of intelligence (check)",B,Army and security officers
+amer_khammash,Amer Khammash,Amer Khammash,,Chief of staff in the 1967 war,B,Army and security officers
+mohammed_rasoul_al_kilani,Mohammed Rasoul al-Kilani,Mohammed Rasoul al-Kilani,,"First head of the General Intelligence Directorate, 1964 (check)",B,Army and security officers
+sadiq_al_shara,Sadiq al-Shar'a,Sadiq al-Shar'a,,Senior officer in the 1960s (check),C,Army and security officers
+abd_al_latif_abu_qura,Abd al-Latif Abu Qura,Abd al-Latif Abu Qura,,Muslim Brotherhood leader in Jordan (check),A,"Parliament, parties and opposition"
+taqi_al_din_al_nabhani,Taqi al-Din al-Nabhani,Taqi al-Din al-Nabhani,,"Founder of Hizb ut-Tahrir, 1953",B,"Parliament, parties and opposition"
+fuad_nassar,Fuad Nassar,Fuad Nassar,,Secretary general of the Jordanian Communist Party,B,"Parliament, parties and opposition"
+mithqal_al_fayiz,Mithqal al-Fayiz,Mithqal al-Fayez,,Paramount sheikh of the Bani Sakhr,A,"Tribal leaders, Palestinian notables, merchants and clergy"
+haj_amin_al_husseini,Haj Amin al-Husseini,Amin al-Husseini,,"Grand Mufti of Jerusalem, in exile",B,"Tribal leaders, Palestinian notables, merchants and clergy"
+musa_al_alami,Musa al-Alami,Musa al-Alami,,Palestinian notable and educator,C,"Tribal leaders, Palestinian notables, merchants and clergy"
+ahmad_shuqayri,Ahmad Shuqayri,Ahmad Shukeiri,,"First PLO chairman, 1964",C,"Tribal leaders, Palestinian notables, merchants and clergy"
+abd_al_hamid_shoman,Abd al-Hamid Shoman,Abdul Hameed Shoman,,Founder of the Arab Bank,A,"Tribal leaders, Palestinian notables, merchants and clergy"
+gamal_abdel_nasser,Gamal Abdel Nasser,Gamal Abdel Nasser,,Egyptian leader,A,Foreign figures
+faisal_ii,King Faisal II,Faisal II of Iraq,,"King of Iraq, killed 1958",A,Foreign figures
+nuri_al_said,Nuri al-Said,Nuri al-Said,,Iraqi prime minister,B,Foreign figures
+abd_al_karim_qasim,Abd al-Karim Qasim,Abd al-Karim Qasim,,Iraqi leader from 1958,B,Foreign figures
+saud,King Saud,Saud of Saudi Arabia,,Saudi king,B,Foreign figures
+shukri_al_quwatli,Shukri al-Quwatli,Shukri al-Quwatli,,Syrian president,B,Foreign figures
+alec_kirkbride,Sir Alec Kirkbride,Alec Kirkbride,,British ambassador in Amman until 1951,B,Foreign figures
+anthony_eden,Anthony Eden,Anthony Eden,,"British prime minister, Suez 1956",B,Foreign figures
+dwight_eisenhower,Dwight Eisenhower,Dwight D. Eisenhower,,US president,A,Foreign figures
+john_foster_dulles,John Foster Dulles,John Foster Dulles,,US secretary of state,B,Foreign figures
+david_ben_gurion,David Ben-Gurion,David Ben-Gurion,,Israeli prime minister,B,Foreign figures
+moshe_dayan,Moshe Dayan,Moshe Dayan,,Israeli commander,B,Foreign figures
+ariel_sharon,Ariel Sharon,Ariel Sharon,,Israeli commander of Unit 101,A,Foreign figures
+levi_eshkol,Levi Eshkol,Levi Eshkol,,Israeli prime minister from 1963,C,Foreign figures
+nikita_khrushchev,Nikita Khrushchev,Nikita Khrushchev,,Soviet leader,C,Foreign figures
+gerald_templer,Sir Gerald Templer,Gerald Templer,,"British Chief of the Imperial General Staff; Templer mission to Amman, December 1955",A,Foreign figures

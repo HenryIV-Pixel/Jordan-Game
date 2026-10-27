@@ -1,35 +1,121 @@
 extends Node
-## Puts the map and the interface together. With `-- --shots=DIR` it plays a scripted tour and saves screenshots.
+## Switches between the main menu, the Salt career slice and the parliament scenario.
+## Command-line tools (after `--`): --shots=DIR (screenshot tour), --autoplay=SECONDS (interface smoke test),
+## --pact-shots=DIR (parliament screenshots), --menu-shot=FILE.
 
 var map: MapView
 var hud: HUD
+var layer: CanvasLayer
+var menu: MainMenu
+var pact: PactScreen
+var mode := ""
+var _drift: Tween
 
 
 func _ready() -> void:
 	map = MapView.new()
 	add_child(map)
-	var layer := CanvasLayer.new()
+	layer = CanvasLayer.new()
 	layer.layer = 10
 	add_child(layer)
+	var args := OS.get_cmdline_user_args()
+	for a in args:
+		if a.begins_with("--shots="):
+			start_salt()
+			_tour(a.substr(8))
+			return
+		if a.begins_with("--autoplay="):
+			start_salt()
+			_autoplay(float(a.substr(11)))
+			return
+		if a.begins_with("--pact-shots="):
+			start_pact()
+			_pact_tour(a.substr(13))
+			return
+		if a.begins_with("--menu-shot="):
+			show_menu()
+			await get_tree().create_timer(2.0).timeout
+			await _save(a.substr(12))
+			get_tree().quit()
+			return
+	show_menu()
+
+
+func _clear() -> void:
+	for c in layer.get_children():
+		c.queue_free()
+	hud = null
+	menu = null
+	pact = null
+	if _drift:
+		_drift.kill()
+
+
+func show_menu() -> void:
+	_clear()
+	mode = "menu"
+	map.set_shown(true)
+	map.show_tokens = false
+	Game.new_game(1953)
+	Game.set_speed(0)
+	Game.ui_hold = true
+	Game.minutes = 18 * 60 + 10 # sunset over the map
+	map.cam.position = Game.town_pos("amman") + Vector2(-70, 60)
+	map.cam.zoom = Vector2(1.7, 1.7)
+	_drift = create_tween().set_loops().set_trans(Tween.TRANS_SINE)
+	_drift.tween_property(map.cam, "position", Game.town_pos("amman") + Vector2(30, -30), 24.0)
+	_drift.tween_property(map.cam, "position", Game.town_pos("amman") + Vector2(-70, 60), 24.0)
+	menu = MainMenu.new()
+	menu.chosen.connect(func(m): start_pact() if m == "pact" else start_salt())
+	layer.add_child(menu)
+
+
+func start_salt() -> void:
+	_clear()
+	mode = "salt"
+	map.set_shown(true)
+	map.show_tokens = true
+	Game.new_game(randi())
+	Game.ui_hold = false
+	map.cam.position = Game.town_pos("salt") + Vector2(10, 4)
+	map.cam.zoom = Vector2(3.2, 3.2)
 	hud = HUD.new()
 	hud.map = map
+	hud.menu_requested.connect(show_menu)
 	layer.add_child(hud)
-	map.town_clicked.connect(hud.ask_travel)
+	if not map.town_clicked.is_connected(_on_town):
+		map.town_clicked.connect(_on_town)
 	Game.set_speed(0)
 	hud.show_intro()
-	for a in OS.get_cmdline_user_args():
-		if a.begins_with("--shots="):
-			_tour(a.substr(8))
-		if a.begins_with("--autoplay="):
-			_autoplay(float(a.substr(11)))
+
+
+func _on_town(id: String) -> void:
+	if hud and mode == "salt":
+		hud.ask_travel(id)
+
+
+func start_pact() -> void:
+	_clear()
+	mode = "pact"
+	map.set_shown(false)
+	Game.set_speed(0)
+	Game.ui_hold = true
+	pact = PactScreen.new()
+	pact.back_to_menu.connect(show_menu)
+	layer.add_child(pact)
+	pact.start(randi())
+
+
+func _save(path: String) -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().create_timer(0.3).timeout
+	get_viewport().get_texture().get_image().save_png(path)
+	print("shot ", path.get_file())
 
 
 func _shot(dir: String, name: String) -> void:
-	await get_tree().process_frame
-	await get_tree().process_frame
-	await get_tree().create_timer(0.25).timeout
-	get_viewport().get_texture().get_image().save_png("%s/%s.png" % [dir, name])
-	print("shot ", name)
+	await _save("%s/%s.png" % [dir, name])
 
 
 func _tour(dir: String) -> void:
@@ -93,6 +179,49 @@ func _tour(dir: String) -> void:
 	get_tree().quit()
 
 
+func _pact_tour(dir: String) -> void:
+	DirAccess.make_dir_recursive_absolute(dir)
+	await get_tree().create_timer(1.2).timeout
+	await _shot(dir, "p01-intro")
+	pact.modals.close()
+	House.resolve_event("ok")
+	await get_tree().create_timer(0.8).timeout
+	await _shot(dir, "p02-house")
+	var d: Dictionary = House.deputies[14]
+	pact.select(d["id"])
+	await get_tree().create_timer(0.6).timeout
+	await _shot(dir, "p03-deputy")
+	House.start_duel(d["id"], "chat")
+	pact._open_duel()
+	House.duel_play("listen")
+	pact.modals.close()
+	pact._open_duel()
+	await get_tree().create_timer(0.4).timeout
+	await _shot(dir, "p04-duel")
+	House.duel_finish()
+	pact.modals.close()
+	House.end_day()
+	await get_tree().create_timer(0.5).timeout
+	await _shot(dir, "p05-event")
+	while House.phase == "lobby":
+		while not pact.modals.stack.is_empty():
+			pact.modals.close()
+		while not House.event_queue.is_empty():
+			House.resolve_event(House.event_queue[0]["options"][0]["id"])
+		for x in House.deputies:
+			if x["stance"] > -20 and House.action_state("palace", x)["ok"]:
+				House.act("palace", x["id"])
+		House.end_day()
+		House.street = min(House.street, 45.0) # keep the tour alive until the vote
+	while not House.event_queue.is_empty():
+		House.resolve_event(House.event_queue[0]["options"][0]["id"])
+	await get_tree().create_timer(4.0).timeout
+	await _shot(dir, "p06-vote")
+	await get_tree().create_timer(12.0).timeout
+	await _shot(dir, "p07-result")
+	get_tree().quit()
+
+
 func _clear_popups() -> void:
 	while not hud.modal_stack.is_empty():
 		hud.close_modal()
@@ -117,6 +246,8 @@ func _autoplay(seconds: float) -> void:
 	while t < seconds and not Game.over:
 		await get_tree().process_frame
 		t += get_process_delta_time()
+		if hud == null:
+			break
 		if not hud.modal_stack.is_empty():
 			var top: Control = hud.modal_stack[-1]
 			var buttons := top.find_children("*", "Button", true, false).filter(func(b): return not b.disabled and b.is_visible_in_tree())

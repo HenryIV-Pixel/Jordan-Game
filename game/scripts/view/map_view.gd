@@ -17,6 +17,7 @@ var tint: CanvasModulate
 var polylines := {}
 var buildings := {}
 var hover := ""
+var show_tokens := true
 var _drag := false
 var _drag_from := Vector2.ZERO
 var _moved := 0.0
@@ -92,6 +93,14 @@ func _make_buildings(t: Dictionary) -> Array:
 		var d := pow(rng.randf(), 0.7) * r
 		out.append({"p": c + Vector2(cos(a) * d * 1.15, sin(a) * d), "w": 0.5 + rng.randf() * 0.5, "h": 0.4 + rng.randf() * 0.45, "lit": rng.randf(), "tone": rng.randf()})
 	return out
+
+
+## Hides or shows the whole map, including its overlay layer (used behind the parliament screen).
+func set_shown(on: bool) -> void:
+	visible = on
+	marks.get_parent().visible = on
+	set_process(on)
+	set_process_unhandled_input(on)
 
 
 func zoom() -> float:
@@ -277,7 +286,7 @@ class MarkLayer extends Node2D:
 					draw_circle(sp, (5.0 + life * 16.0) * inv, Color(0.24, 0.23, 0.23, 0.32 * (1.0 - life)))
 		# rival route and token
 		var rv: Dictionary = Game.rival
-		if Game.rival_visible():
+		if map.show_tokens and Game.rival_visible():
 			var rp := Game.rival_pos()
 			if rp.distance_to(Game.player_pos()) < 30.0 * inv:
 				rp += Vector2(-34, -10) * inv # stand beside you, not on top of you
@@ -318,8 +327,8 @@ class MarkLayer extends Node2D:
 			draw_string(f, Vector2(-tw / 2, ly), label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(0.98, 0.94, 0.84, a) if not faded else Color(0.85, 0.85, 0.85, a))
 			draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
 		# the player
-		var pp := Game.player_pos()
-		_token(pp, UI.GOLD, "أنت", inv, font)
+		if map.show_tokens:
+			_token(Game.player_pos(), UI.GOLD, "أنت", inv, font)
 
 	func _token(p: Vector2, c: Color, label: String, inv: float, font: Font) -> void:
 		draw_set_transform(p, 0, Vector2(inv, inv))
