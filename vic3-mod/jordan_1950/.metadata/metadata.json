@@ -1,8 +1,8 @@
 {
   "name": "Jordan 1950 (Cold War Era submod)",
   "id": "jordan_game.jordan_1950",
-  "version": "0.1.0",
-  "supported_game_version": "1.11.*",
+  "version": "0.1.1",
+  "supported_game_version": "1.14.*",
   "short_description": "Jordan's 1950s: the Baghdad Pact, Glubb Pasha, the Nabulsi government and the 1957 crisis. Load after Cold War Era.",
   "tags": ["Events", "Gameplay", "Historical"],
   "relationships": [],
