@@ -1,0 +1,41 @@
+# Adds Jordan's journal entries at the right dates. Lists in on_actions merge with the base game and Cold War Era.
+on_monthly_pulse_country = {
+	on_actions = { jor_monthly_pulse }
+}
+
+jor_monthly_pulse = {
+	trigger = { jor_is_jordan = yes }
+	effect = {
+		if = {
+			limit = { NOT = { has_variable = jor_started } }
+			set_variable = { name = jor_started }
+			add_journal_entry = { type = je_jor_hashemite_kingdom }
+		}
+		if = {
+			limit = {
+				game_date >= 1955.11.1
+				NOT = { has_variable = jor_pact_started }
+			}
+			set_variable = { name = jor_pact_started }
+			add_journal_entry = { type = je_jor_baghdad_pact }
+		}
+		if = {
+			limit = {
+				game_date >= 1956.3.1
+				has_variable = jor_pact_decided
+				NOT = { has_variable = jor_glubb_started }
+			}
+			set_variable = { name = jor_glubb_started }
+			add_journal_entry = { type = je_jor_arab_legion }
+		}
+		if = {
+			limit = {
+				game_date >= 1956.10.21
+				has_variable = jor_glubb_started
+				NOT = { has_variable = jor_nabulsi_started }
+			}
+			set_variable = { name = jor_nabulsi_started }
+			add_journal_entry = { type = je_jor_nabulsi }
+		}
+	}
+}

@@ -1,0 +1,54 @@
+je_jor_hashemite_kingdom = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	group = je_group_historical_content
+	possible = { jor_is_jordan = yes }
+	immediate = {
+		if = {
+			limit = {
+				game_date < 1957.3.13
+				NOT = { has_variable = jor_treaty_ended }
+			}
+			add_modifier = { name = jor_british_subsidy }
+		}
+	}
+	complete = { has_variable = jor_nabulsi_done }
+	on_complete = { trigger_event = { id = jor.9 } }
+	should_be_pinned_by_default = yes
+	weight = 100
+}
+
+je_jor_baghdad_pact = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	group = je_group_historical_content
+	possible = { jor_is_jordan = yes }
+	immediate = { trigger_event = { id = jor.1 } }
+	complete = { has_variable = jor_pact_decided }
+	timeout = 730
+	on_timeout = { set_variable = { name = jor_pact_decided } }
+	should_be_pinned_by_default = yes
+	weight = 100
+}
+
+je_jor_arab_legion = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	group = je_group_historical_content
+	possible = { jor_is_jordan = yes }
+	immediate = { trigger_event = { id = jor.3 } }
+	complete = { has_variable = jor_glubb_done }
+	timeout = 730
+	on_timeout = { set_variable = { name = jor_glubb_done } }
+	should_be_pinned_by_default = yes
+	weight = 100
+}
+
+je_jor_nabulsi = {
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+	group = je_group_historical_content
+	possible = { jor_is_jordan = yes }
+	immediate = { trigger_event = { id = jor.4 } }
+	complete = { has_variable = jor_nabulsi_done }
+	timeout = 1095
+	on_timeout = { set_variable = { name = jor_nabulsi_done } }
+	should_be_pinned_by_default = yes
+	weight = 100
+}

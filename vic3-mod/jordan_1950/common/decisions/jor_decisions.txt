@@ -1,0 +1,28 @@
+jor_decision_phosphate_drive = {
+	is_shown = { jor_is_jordan = yes }
+	possible = {
+		NOT = { has_modifier = jor_phosphate_drive }
+		NOT = { has_variable = jor_phosphate_done }
+	}
+	when_taken = {
+		set_variable = { name = jor_phosphate_done }
+		add_modifier = { name = jor_phosphate_drive years = 15 }
+		jor_please = { IG = ig_industrialists }
+		jor_anger = { IG = ig_rural_folk }
+	}
+	ai_chance = { base = 10 }
+}
+
+jor_decision_aqaba_port = {
+	is_shown = { jor_is_jordan = yes }
+	possible = {
+		game_date >= 1952.1.1
+		NOT = { has_variable = jor_aqaba_done }
+	}
+	when_taken = {
+		set_variable = { name = jor_aqaba_done }
+		add_modifier = { name = jor_aqaba_port years = 20 }
+		jor_please = { IG = ig_petty_bourgeoisie }
+	}
+	ai_chance = { base = 10 }
+}

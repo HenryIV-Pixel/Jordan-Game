@@ -1,0 +1,6 @@
+# The ONE place the Jordan country tag is written.
+# If Cold War Era uses another tag for Jordan, change JOR here and in jor_country below.
+jor_is_jordan = {
+	exists = c:JOR
+	this = c:JOR
+}

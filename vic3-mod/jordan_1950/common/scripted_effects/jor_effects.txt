@@ -1,0 +1,27 @@
+# Helpers that do nothing if Cold War Era renamed an interest group or a country.
+# Usage: jor_please = { IG = ig_armed_forces }
+jor_please = {
+	if = {
+		limit = { exists = ig:$IG$ }
+		ig:$IG$ = { add_modifier = { name = jor_ig_pleased years = 5 } }
+	}
+}
+jor_anger = {
+	if = {
+		limit = { exists = ig:$IG$ }
+		ig:$IG$ = { add_modifier = { name = jor_ig_angered years = 5 } }
+	}
+}
+jor_crush = {
+	if = {
+		limit = { exists = ig:$IG$ }
+		ig:$IG$ = { add_modifier = { name = jor_ig_crushed years = 3 } }
+	}
+}
+# Usage: jor_relations = { TAG = GBR VALUE = -30 }
+jor_relations = {
+	if = {
+		limit = { exists = c:$TAG$ }
+		change_relations = { country = c:$TAG$ value = $VALUE$ }
+	}
+}

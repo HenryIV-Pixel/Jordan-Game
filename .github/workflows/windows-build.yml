@@ -55,6 +55,9 @@ jobs:
           pip install --quiet pillow
           python3 tools/test_fetch_portraits.py
 
+      - name: Victoria 3 sub-mod checks
+        run: python3 tools/check_vic3_mod.py vic3-mod/jordan_1950 | sed 's/^ERROR /::error::/'; python3 tools/check_vic3_mod.py vic3-mod/jordan_1950 > /dev/null
+
       - name: Export Windows .exe
         run: |
           mkdir -p build
@@ -67,3 +70,10 @@ jobs:
         with:
           name: AlMamlaka1953-windows
           path: build/AlMamlaka1953.exe
+
+      - name: Upload the Victoria 3 sub-mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: jordan_1950-vic3-mod
+          path: vic3-mod/
+          include-hidden-files: true

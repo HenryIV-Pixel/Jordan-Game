@@ -1,0 +1,260 @@
+namespace = jor
+
+# 1. December 1955: General Templer arrives in Amman with the Baghdad Pact offer.
+jor.1 = {
+	type = country_event
+	title = jor.1.t
+	desc = jor.1.d
+	flavor = jor.1.f
+	event_image = { video = "unspecific_politicians_arguing" }
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	duration = 3
+
+	option = { # take it to cabinet
+		name = jor.1.a
+		default_option = yes
+		set_variable = { name = jor_pact_push }
+		jor_relations = { TAG = GBR VALUE = 20 }
+		jor_relations = { TAG = IRQ VALUE = 20 }
+		jor_relations = { TAG = EGY VALUE = -20 }
+		jor_please = { IG = ig_landowners }
+		trigger_event = { id = jor.2 days = 10 }
+		ai_chance = { base = 40 }
+	}
+	option = { # refuse outright
+		name = jor.1.b
+		set_variable = { name = jor_pact_decided }
+		jor_relations = { TAG = GBR VALUE = -20 }
+		jor_relations = { TAG = EGY VALUE = 20 }
+		jor_relations = { TAG = SYR VALUE = 10 }
+		jor_please = { IG = ig_intelligentsia }
+		jor_anger = { IG = ig_landowners }
+		ai_chance = { base = 30 }
+	}
+	option = { # stall and ask for more
+		name = jor.1.c
+		add_modifier = { name = jor_stall_money years = 2 }
+		jor_relations = { TAG = GBR VALUE = -5 }
+		trigger_event = { id = jor.2 days = 30 }
+		set_variable = { name = jor_pact_push }
+		ai_chance = { base = 30 }
+	}
+}
+
+# 2. The street answers: riots from Amman to Jerusalem.
+jor.2 = {
+	type = country_event
+	title = jor.2.t
+	desc = jor.2.d
+	flavor = jor.2.f
+	event_image = { video = "unspecific_military_parade" }
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+	duration = 3
+
+	option = { # martial law, push the pact through
+		name = jor.2.a
+		set_variable = { name = jor_pact_decided }
+		set_variable = { name = jor_in_pact }
+		add_modifier = { name = jor_martial_law years = 1 }
+		add_modifier = { name = jor_street_on_fire years = 2 }
+		jor_relations = { TAG = GBR VALUE = 30 }
+		jor_relations = { TAG = IRQ VALUE = 30 }
+		jor_relations = { TAG = EGY VALUE = -50 }
+		jor_relations = { TAG = SAU VALUE = -30 }
+		jor_please = { IG = ig_armed_forces }
+		jor_crush = { IG = ig_intelligentsia }
+		jor_anger = { IG = ig_petty_bourgeoisie }
+		ai_chance = { base = 20 }
+	}
+	option = { # what happened: the government falls and the House is dissolved
+		name = jor.2.b
+		default_option = yes
+		set_variable = { name = jor_pact_decided }
+		jor_relations = { TAG = GBR VALUE = -20 }
+		jor_relations = { TAG = EGY VALUE = 30 }
+		jor_please = { IG = ig_intelligentsia }
+		jor_please = { IG = ig_petty_bourgeoisie }
+		jor_anger = { IG = ig_landowners }
+		ai_chance = { base = 80 }
+	}
+}
+
+# 3. March 1956: Glubb Pasha and the Arab Legion.
+jor.3 = {
+	type = country_event
+	title = jor.3.t
+	desc = jor.3.d
+	flavor = jor.3.f
+	event_image = { video = "unspecific_military_parade" }
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	duration = 3
+
+	option = { # dismiss him within hours (history)
+		name = jor.3.a
+		default_option = yes
+		set_variable = { name = jor_glubb_done }
+		add_modifier = { name = jor_arab_legion_arabized years = 10 }
+		add_modifier = { name = jor_officers_uneasy months = 6 }
+		jor_relations = { TAG = GBR VALUE = -40 }
+		jor_relations = { TAG = EGY VALUE = 30 }
+		jor_please = { IG = ig_armed_forces }
+		jor_please = { IG = ig_intelligentsia }
+		ai_chance = { base = 70 }
+	}
+	option = { # keep him: British money keeps flowing
+		name = jor.3.b
+		set_variable = { name = jor_glubb_done }
+		jor_relations = { TAG = GBR VALUE = 20 }
+		add_modifier = { name = jor_officers_uneasy years = 3 }
+		jor_anger = { IG = ig_armed_forces }
+		jor_anger = { IG = ig_intelligentsia }
+		ai_chance = { base = 30 }
+	}
+}
+
+# 4. October 1956: the freest election yet, and the National Socialists come first.
+jor.4 = {
+	type = country_event
+	title = jor.4.t
+	desc = jor.4.d
+	flavor = jor.4.f
+	event_image = { video = "unspecific_politicians_arguing" }
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	duration = 3
+
+	option = { # ask Nabulsi to form a government (history)
+		name = jor.4.a
+		default_option = yes
+		set_variable = { name = jor_nabulsi_gov }
+		jor_please = { IG = ig_intelligentsia }
+		jor_please = { IG = ig_trade_unions }
+		jor_anger = { IG = ig_landowners }
+		trigger_event = { id = jor.5 days = 80 }
+		ai_chance = { base = 70 }
+	}
+	option = { # a palace man instead
+		name = jor.4.b
+		add_modifier = { name = jor_street_on_fire years = 1 }
+		jor_anger = { IG = ig_intelligentsia }
+		jor_anger = { IG = ig_trade_unions }
+		jor_please = { IG = ig_landowners }
+		trigger_event = { id = jor.6 days = 160 }
+		ai_chance = { base = 30 }
+	}
+}
+
+# 5. Early 1957: Cairo, Damascus and Riyadh offer to replace the British subsidy.
+jor.5 = {
+	type = country_event
+	title = jor.5.t
+	desc = jor.5.d
+	flavor = jor.5.f
+	event_image = { video = "unspecific_signed_contract" }
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+	duration = 3
+
+	option = { # end the Anglo-Jordanian treaty (history)
+		name = jor.5.a
+		default_option = yes
+		set_variable = { name = jor_treaty_ended }
+		remove_modifier = jor_british_subsidy
+		add_modifier = { name = jor_arab_subsidy years = 2 }
+		jor_relations = { TAG = GBR VALUE = -30 }
+		jor_relations = { TAG = EGY VALUE = 30 }
+		jor_relations = { TAG = SYR VALUE = 30 }
+		jor_relations = { TAG = SAU VALUE = 20 }
+		jor_please = { IG = ig_intelligentsia }
+		jor_anger = { IG = ig_armed_forces }
+		trigger_event = { id = jor.6 days = 60 }
+		ai_chance = { base = 60 }
+	}
+	option = { # keep the British treaty and the money
+		name = jor.5.b
+		jor_anger = { IG = ig_intelligentsia }
+		jor_anger = { IG = ig_trade_unions }
+		add_modifier = { name = jor_street_on_fire years = 1 }
+		trigger_event = { id = jor.6 days = 60 }
+		ai_chance = { base = 40 }
+	}
+}
+
+# 6. April 1957: the palace and the government cannot both survive.
+jor.6 = {
+	type = country_event
+	title = jor.6.t
+	desc = jor.6.d
+	flavor = jor.6.f
+	event_image = { video = "unspecific_politicians_arguing" }
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+	duration = 3
+
+	option = { # dismiss the government, ban the parties, martial law (history)
+		name = jor.6.a
+		default_option = yes
+		set_variable = { name = jor_nabulsi_done }
+		set_variable = { name = jor_palace_won }
+		add_modifier = { name = jor_martial_law years = 3 }
+		if = {
+			limit = { has_modifier = jor_arab_subsidy }
+			remove_modifier = jor_arab_subsidy
+		}
+		if = {
+			limit = { NOT = { has_modifier = jor_british_subsidy } }
+			add_modifier = { name = jor_us_aid years = 10 }
+		}
+		jor_relations = { TAG = USA VALUE = 40 }
+		jor_relations = { TAG = EGY VALUE = -50 }
+		jor_relations = { TAG = SYR VALUE = -40 }
+		jor_relations = { TAG = SAU VALUE = 20 }
+		jor_please = { IG = ig_armed_forces }
+		jor_please = { IG = ig_landowners }
+		jor_please = { IG = ig_devout }
+		jor_crush = { IG = ig_intelligentsia }
+		jor_crush = { IG = ig_trade_unions }
+		ai_chance = { base = 70 }
+	}
+	option = { # let the elected government stand
+		name = jor.6.b
+		set_variable = { name = jor_nabulsi_done }
+		add_modifier = { name = jor_officers_uneasy years = 2 }
+		jor_relations = { TAG = EGY VALUE = 30 }
+		jor_relations = { TAG = USA VALUE = -20 }
+		jor_please = { IG = ig_intelligentsia }
+		jor_please = { IG = ig_trade_unions }
+		jor_anger = { IG = ig_armed_forces }
+		jor_anger = { IG = ig_landowners }
+		ai_chance = { base = 30 }
+	}
+}
+
+# 9. Closing note for the 1950s chain.
+jor.9 = {
+	type = country_event
+	title = jor.9.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = jor.9.d_palace
+				trigger = { has_variable = jor_palace_won }
+			}
+			triggered_desc = {
+				desc = jor.9.d_other
+			}
+		}
+	}
+	event_image = { video = "unspecific_signed_contract" }
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	duration = 3
+
+	option = {
+		name = jor.9.a
+		default_option = yes
+	}
+}
